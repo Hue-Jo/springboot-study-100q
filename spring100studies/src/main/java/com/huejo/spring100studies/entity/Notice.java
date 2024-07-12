@@ -22,6 +22,7 @@ public class Notice {
     private String title;
     private String contents;
     private LocalDateTime registerDt;
+    private LocalDateTime updateDt;
 
     private int hits;
     private int likes;
