@@ -27,4 +27,6 @@ public class Notice {
     private int hits;
     private int likes;
 
+    private boolean deleted;
+    private LocalDateTime deletedDt;
 }
