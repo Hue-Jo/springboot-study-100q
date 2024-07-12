@@ -1,10 +1,23 @@
 package com.huejo.spring100studies.notice.controller;
 
+import com.huejo.spring100studies.entity.Notice;
+import com.huejo.spring100studies.repository.NoticeRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 public class ApiNoticeGetController {
+    private final NoticeRepository noticeRepository;
+
+    public ApiNoticeGetController(NoticeRepository noticeRepository) {
+        this.noticeRepository = noticeRepository;
+    }
 
 
 //    @GetMapping("/api/notice")
@@ -56,9 +69,20 @@ public class ApiNoticeGetController {
 //        return noticeList;
 //    }
 
-    @GetMapping("/api/notice")
-    public int notice5() {
-        return 10;
+//    @GetMapping("/api/notice")
+//    public int notice5() {
+//        return 10;
+//    }
+
+
+    @GetMapping("/api/notice/lastest/{size}")
+    public Page<Notice> noticeLatest(@PathVariable int size) {
+
+        Page<Notice> noticeLists =
+                noticeRepository.findAll(
+                        PageRequest.of(0, size, Sort.Direction.DESC, "registerDt"));
+
+        return noticeLists;
     }
 
 
