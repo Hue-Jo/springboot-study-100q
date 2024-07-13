@@ -1,22 +1,18 @@
 package com.huejo.spring100studies.notice.controller;
 
 import com.huejo.spring100studies.entity.Notice;
+import com.huejo.spring100studies.notice.exception.DuplicatedNoticeException;
 import com.huejo.spring100studies.notice.model.NoticeInput;
-import com.huejo.spring100studies.notice.model.NoticeModel;
-import com.huejo.spring100studies.notice.model.ResponseError;
 import com.huejo.spring100studies.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.weaver.ast.Not;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.Errors;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -131,21 +127,51 @@ public class ApiNoticePostController {
 //    }
 
 
-    @PostMapping("/api/novice")
-    public ResponseEntity<Object> post(@RequestBody @Valid NoticeInput noticeInput
-            , Errors errors) {
+//    @PostMapping("/api/novice")
+//    public ResponseEntity<Object> post(@RequestBody @Valid NoticeInput noticeInput
+//            , Errors errors) {
+//
+//        if(errors.hasErrors()) {
+//
+//            List<ResponseError>  responseErrors = new ArrayList<>();
+//
+//            errors.getAllErrors().stream().forEach(e -> {
+//                responseErrors.add(ResponseError.of((FieldError) e));
+//            });
+//
+//            return new ResponseEntity<>(responseErrors, HttpStatus.BAD_REQUEST);
+//        }
+//
+//        noticeRepository.save(Notice.builder()
+//                .title(noticeInput.getTitle())
+//                .contents(noticeInput.getContents())
+//                .hits(0)
+//                .likes(0)
+//                .registerDt(LocalDateTime.now())
+//                .build());
+//
+//        return ResponseEntity.ok().build();
+//    }
 
-        if(errors.hasErrors()) {
+    @ExceptionHandler(DuplicatedNoticeException.class)
+    public ResponseEntity<?> handlerDuplicatedNoticeException(DuplicatedNoticeException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+    //1분 이내 동일한 제목, 내용의 글이 작성될 경우 중복등록 막기
+    @PostMapping("/api/notice")
+    public void addNotice(@RequestBody NoticeInput noticeInput) {
 
-            List<ResponseError>  responseErrors = new ArrayList<>();
+        // 1분 미만 체크
+        LocalDateTime checkDate = LocalDateTime.now().minusMinutes(1);
 
-            errors.getAllErrors().stream().forEach(e -> {
-                responseErrors.add(ResponseError.of((FieldError) e));
-            });
-
-            return new ResponseEntity<>(responseErrors, HttpStatus.BAD_REQUEST);
+        // 제목, 내용 동일 체크
+        int noticeCount = noticeRepository.countByTitleAndContentsAndRegisterDtIsGreaterThanEqual(
+                noticeInput.getTitle(),
+                noticeInput.getContents(),
+                checkDate);
+        if (noticeCount > 0) {
+                throw new DuplicatedNoticeException("1분 이내에 작성한 동일한 공지가 이미 존재합니다.");
         }
-
         noticeRepository.save(Notice.builder()
                 .title(noticeInput.getTitle())
                 .contents(noticeInput.getContents())
@@ -153,7 +179,5 @@ public class ApiNoticePostController {
                 .likes(0)
                 .registerDt(LocalDateTime.now())
                 .build());
-
-        return ResponseEntity.ok().build();
     }
 }
