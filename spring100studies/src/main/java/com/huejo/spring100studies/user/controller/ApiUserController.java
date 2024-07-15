@@ -1,6 +1,9 @@
 package com.huejo.spring100studies.user.controller;
 
+import com.huejo.spring100studies.notice.entity.Notice;
+import com.huejo.spring100studies.notice.model.NoticeResponse;
 import com.huejo.spring100studies.notice.model.ResponseError;
+import com.huejo.spring100studies.notice.repository.NoticeRepository;
 import com.huejo.spring100studies.user.entity.User;
 import com.huejo.spring100studies.user.exception.UserNotFoundException;
 import com.huejo.spring100studies.user.model.UserInput;
@@ -24,6 +27,7 @@ import java.util.List;
 public class ApiUserController {
 
     private final UserRepository userRepository;
+    private final NoticeRepository noticeRepository;
 
 //    @PostMapping("/api/user")
 //    public ResponseEntity<?> adduser(@RequestBody @Valid UserInput userInput, Errors errors) {
@@ -105,4 +109,18 @@ public class ApiUserController {
         return userResponse;
     }
 
+    @GetMapping("/api/user/{id}/notice")
+    public List<NoticeResponse> userNotice(@PathVariable Long id) {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("사용자 정보가 없습니다."));
+
+        List<Notice> noticeList = noticeRepository.findByUser(user);
+        List<NoticeResponse> noticeResponseList = new ArrayList<>();
+
+        noticeList.stream().forEach((e) ->  {
+            noticeResponseList.add(NoticeResponse.of(e));
+        });
+        return noticeResponseList;
+    }
 }

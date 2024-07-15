@@ -1,6 +1,7 @@
 package com.huejo.spring100studies.notice.repository;
 
 import com.huejo.spring100studies.notice.entity.Notice;
+import com.huejo.spring100studies.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -20,5 +21,6 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
 
     int countByTitleAndContentsAndRegisterDtIsGreaterThanEqual(String title, String contents, LocalDateTime registerDt);
 
+    List<Notice> findByUser(User user);
 
 }
