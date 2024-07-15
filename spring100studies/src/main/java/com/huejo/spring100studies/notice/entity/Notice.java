@@ -1,4 +1,4 @@
-package com.huejo.spring100studies.entity;
+package com.huejo.spring100studies.notice.entity;
 
 import lombok.*;
 

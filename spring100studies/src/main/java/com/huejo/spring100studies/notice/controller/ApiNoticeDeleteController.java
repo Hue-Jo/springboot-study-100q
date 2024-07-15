@@ -1,17 +1,12 @@
 package com.huejo.spring100studies.notice.controller;
 
-import com.huejo.spring100studies.entity.Notice;
 import com.huejo.spring100studies.notice.exception.AlreadyDeletedException;
 import com.huejo.spring100studies.notice.exception.NoticeNotFoundException;
-import com.huejo.spring100studies.notice.model.NoticeDeleteInput;
-import com.huejo.spring100studies.repository.NoticeRepository;
+import com.huejo.spring100studies.notice.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

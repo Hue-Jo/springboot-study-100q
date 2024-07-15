@@ -1,6 +1,6 @@
-package com.huejo.spring100studies.repository;
+package com.huejo.spring100studies.notice.repository;
 
-import com.huejo.spring100studies.entity.Notice;
+import com.huejo.spring100studies.notice.entity.Notice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

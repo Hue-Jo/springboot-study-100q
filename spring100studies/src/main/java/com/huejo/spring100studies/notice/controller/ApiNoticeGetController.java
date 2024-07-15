@@ -1,15 +1,13 @@
 package com.huejo.spring100studies.notice.controller;
 
-import com.huejo.spring100studies.entity.Notice;
-import com.huejo.spring100studies.repository.NoticeRepository;
+import com.huejo.spring100studies.notice.entity.Notice;
+import com.huejo.spring100studies.notice.repository.NoticeRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 public class ApiNoticeGetController {
