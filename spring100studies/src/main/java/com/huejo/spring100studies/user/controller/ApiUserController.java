@@ -4,10 +4,10 @@ import com.huejo.spring100studies.notice.model.ResponseError;
 import com.huejo.spring100studies.user.entity.User;
 import com.huejo.spring100studies.user.exception.UserNotFoundException;
 import com.huejo.spring100studies.user.model.UserInput;
+import com.huejo.spring100studies.user.model.UserResponse;
 import com.huejo.spring100studies.user.model.UserUpdate;
 import com.huejo.spring100studies.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
@@ -92,6 +92,17 @@ public class ApiUserController {
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<?> UserNotFoundExceptionHandler(UserNotFoundException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("/api/user/{id}")
+    public UserResponse getUser(@PathVariable Long id) {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("사용자 정보가 없습니다."));
+
+        //UserResponse userResponse = new UserResponse(user);
+        UserResponse userResponse = UserResponse.of(user);
+        return userResponse;
     }
 
 }
