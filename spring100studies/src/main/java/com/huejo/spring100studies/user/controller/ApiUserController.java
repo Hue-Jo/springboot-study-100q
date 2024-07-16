@@ -8,10 +8,7 @@ import com.huejo.spring100studies.user.entity.User;
 import com.huejo.spring100studies.user.exception.ExistsEmailException;
 import com.huejo.spring100studies.user.exception.PasswordNotMatchException;
 import com.huejo.spring100studies.user.exception.UserNotFoundException;
-import com.huejo.spring100studies.user.model.UserInput;
-import com.huejo.spring100studies.user.model.UserInputPassword;
-import com.huejo.spring100studies.user.model.UserResponse;
-import com.huejo.spring100studies.user.model.UserUpdate;
+import com.huejo.spring100studies.user.model.*;
 import com.huejo.spring100studies.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -26,6 +23,7 @@ import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -196,10 +194,10 @@ public class ApiUserController {
 //    }
 //
 //
-//    private String getEncryptedPassword(String password) {
-//        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-//        return bCryptPasswordEncoder.encode(password);
-//    }
+    private String getEncryptedPassword(String password) {
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        return bCryptPasswordEncoder.encode(password);
+    }
 //
 //    @PostMapping("/api/user")
 //    public ResponseEntity<?> addUser(@RequestBody @Valid UserInput userInput, Errors errors) {
@@ -239,25 +237,70 @@ public class ApiUserController {
 //    }
 
 
+//    @ExceptionHandler(UserNotFoundException.class)
+//    public ResponseEntity<?> UserNotFoundExceptionHandler(UserNotFoundException exception) {
+//        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+//    }
+//
+//    @DeleteMapping("/api/user/{id}")
+//    public ResponseEntity<?> deleteUser(@PathVariable long id) {
+//        User user = userRepository.findById(id)
+//                .orElseThrow(() -> new UserNotFoundException("사용자 정보가 없습니다."));
+//
+//        try {
+//            userRepository.delete(user);
+//        } catch (DataIntegrityViolationException e) {
+//            String message = "작성한 게시물이 아직 남아있습니다.";
+//            return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+//        } catch (Exception e) {
+//            String message = "탈퇴 중 문제가 발생했습니다.";
+//            return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+//        }
+//        return ResponseEntity.ok().build();
+//    }
+
+
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<?> UserNotFoundExceptionHandler(UserNotFoundException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    @DeleteMapping("/api/user/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable long id) {
+//    @GetMapping("/api/user/")
+//    public ResponseEntity<UserResponse> findUser(@RequestBody UserInputFind userInputFind) {
+//
+//        User user = userRepository.findByUserNameAndPhone(userInputFind.getUserName(), userInputFind.getPhone())
+//                .orElseThrow(() -> new UserNotFoundException("사용자 정보가 없습니다."));
+//
+//        UserResponse userResponse = UserResponse.of(user);
+//
+//        return ResponseEntity.ok().body(userResponse);
+//    }
+
+
+    private String getResetPassword() {
+        return UUID.randomUUID().toString().replaceAll("-", "").substring(0, 10);
+    }
+
+    @GetMapping("/api/user/{id}/password/reset")
+    public ResponseEntity<?> resetUserPassword(@PathVariable("id") Long id) {
+
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("사용자 정보가 없습니다."));
 
-        try {
-            userRepository.delete(user);
-        } catch (DataIntegrityViolationException e) {
-            String message = "작성한 게시물이 아직 남아있습니다.";
-            return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            String message = "탈퇴 중 문제가 발생했습니다.";
-            return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
-        }
+        String resetPassword = getResetPassword();
+        String resetEncryptedPassword = getEncryptedPassword(resetPassword);
+        user.setPassword(resetEncryptedPassword);
+        userRepository.save(user);
+
+        String message = String .format("[%s}님의 임시 비밀번호가 [%s]로 초기화되었습니다.",  user.getUserName(), resetPassword);
+        sendSMS(message);
+
         return ResponseEntity.ok().build();
+
+    }
+
+    void sendSMS(String message) {
+        System.out.println("[문자 메시지 전송] ");
+        System.out.println(message);
     }
 }
