@@ -30,3 +30,10 @@ create table NOTICE
     USER_ID     BIGINT,
     constraint FK_NOTICE_USER_ID foreign key (USER_ID) references USER(ID)
 );
+
+create table NOTICE_LIKE
+(
+    ID BIGINT auto_increment primary key,
+    NOTICE_ID VARCHAR(255),
+    USER_ID VARCHAR(255)
+);
