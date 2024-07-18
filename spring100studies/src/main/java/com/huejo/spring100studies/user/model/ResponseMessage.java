@@ -1,13 +1,10 @@
 package com.huejo.spring100studies.user.model;
 
-import com.huejo.spring100studies.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
-
-import java.util.List;
 
 @Data
 @Builder
@@ -16,7 +13,7 @@ import java.util.List;
 public class ResponseMessage {
 
     private ResponseMessageHeader header;
-    private Object data;
+    private Object body;
 
     public static ResponseMessage fail(String message) {
 
@@ -27,7 +24,7 @@ public class ResponseMessage {
                         .resultMessage(message)
                         .status(HttpStatus.BAD_REQUEST.value())
                         .build())
-                .data(null)
+                .body(null)
                 .build();
 
     }
@@ -40,7 +37,19 @@ public class ResponseMessage {
                         .resultMessage("")
                         .status(HttpStatus.OK.value())
                         .build())
-                .data(data)
+                .body(data)
+                .build();
+    }
+
+    public static ResponseMessage success() {
+        return ResponseMessage.builder()
+                .header(ResponseMessageHeader.builder()
+                        .result(true)
+                        .resultCode("")
+                        .resultMessage("")
+                        .status(HttpStatus.OK.value())
+                        .build())
+                .body(null)
                 .build();
     }
 }

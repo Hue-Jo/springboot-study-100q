@@ -1,6 +1,6 @@
 package com.huejo.spring100studies.user.entity;
 
-import com.huejo.spring100studies.user.model.UserStatus;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,26 +12,20 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
 
-@Entity
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class User {
+@Entity
+public class UserLoginHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String email;
+    private long userId;
     private String userName;
-    private String password;
-    private String phone;
-
-    private LocalDateTime regDt;
-    private LocalDateTime updateDt;
-
-    private UserStatus status;
-
-    private boolean lockYn;
+    private String email;
+    private LocalDateTime loginDate;
+    private String ipAddr;
 }
