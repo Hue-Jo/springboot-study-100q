@@ -3,15 +3,11 @@ package com.huejo.spring100studies.user.controller;
 import com.huejo.spring100studies.notice.repository.NoticeRepository;
 import com.huejo.spring100studies.user.entity.User;
 import com.huejo.spring100studies.user.entity.UserLoginHistory;
-import com.huejo.spring100studies.user.model.ResponseMessage;
-import com.huejo.spring100studies.user.model.UserSearch;
-import com.huejo.spring100studies.user.model.UserStatusInput;
-import com.huejo.spring100studies.user.model.UserSummary;
+import com.huejo.spring100studies.user.model.*;
 import com.huejo.spring100studies.user.repository.UserLoginHistoryRepository;
 import com.huejo.spring100studies.user.repository.UserRepository;
 import com.huejo.spring100studies.user.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -69,7 +65,7 @@ public class ApiAdminUserController {
     public ResponseEntity<?> userStatus(@PathVariable Long id, @RequestBody UserStatusInput userStatusInput) {
 
         Optional<User> optionalUser = userRepository.findById(id);
-        if(!optionalUser.isPresent()) {
+        if (!optionalUser.isPresent()) {
             return new ResponseEntity<>(ResponseMessage.fail("사용자 정보가 존재하지 않습니다."), HttpStatus.BAD_REQUEST);
 
         }
@@ -86,7 +82,7 @@ public class ApiAdminUserController {
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
 
         Optional<User> optionalUser = userRepository.findById(id);
-        if(!optionalUser.isPresent()) {
+        if (!optionalUser.isPresent()) {
             return new ResponseEntity<>(ResponseMessage.fail("사용자 정보가 존재하지 않습니다."), HttpStatus.BAD_REQUEST);
 
         }
@@ -112,7 +108,7 @@ public class ApiAdminUserController {
     public ResponseEntity<?> userLock(@PathVariable Long id) {
 
         Optional<User> optionalUser = userRepository.findById(id);
-        if(!optionalUser.isPresent()) {
+        if (!optionalUser.isPresent()) {
             return new ResponseEntity<>(ResponseMessage.fail("사용자 정보가 존재하지 않습니다."), HttpStatus.BAD_REQUEST);
         }
 
@@ -133,7 +129,7 @@ public class ApiAdminUserController {
     public ResponseEntity<?> userUnlock(@PathVariable Long id) {
 
         Optional<User> optionalUser = userRepository.findById(id);
-        if(!optionalUser.isPresent()) {
+        if (!optionalUser.isPresent()) {
             return new ResponseEntity<>(ResponseMessage.fail("사용자 정보가 존재하지 않습니다."), HttpStatus.BAD_REQUEST);
         }
 
@@ -150,11 +146,44 @@ public class ApiAdminUserController {
 
 
     @GetMapping("/api/admin/user/status/count")
-    public HttpEntity<?> userStatusCount() {
+    public ResponseEntity<?> userStatusCount() {
 
         UserSummary userSummary = userService.getUserStatusCount();
 
         return ResponseEntity.ok().body(ResponseMessage.success(userSummary));
     }
 
+
+    @GetMapping("/api/admin/user/today")
+    public ResponseEntity<?> todayUser() {
+
+        List<User> users = userService.getTodayUsers();
+
+        return ResponseEntity.ok().body(ResponseMessage.success(users));
+
+    }
+
+/*    @GetMapping("/api/admin/user/notice/count")
+    public ResponseEntity<?> userNoticeCount(){
+
+        List<UserNoticeCount> userNoticeCountList = userService.getUserNoticeCount();
+
+        return ResponseEntity.ok().body(ResponseMessage.success(userNoticeCountList));
+
+    }*/
+
+    @GetMapping("/api/admin/user/log/count")
+    public ResponseEntity<?> userLogCount() {
+
+        List<UserLogCount> userLogCounts = userService.getUserLogCount();
+        return ResponseEntity.ok().body(ResponseMessage.success(userLogCounts));
+
+    }
+
+    @GetMapping("/api/admin/user/like/best")
+    public ResponseEntity<?> bestLikeCount() {
+
+        List<UserLogCount> userLogCounts = userService.getUserLikeBest();
+        return ResponseEntity.ok().body(ResponseMessage.success(userLogCounts));
+    }
 }
