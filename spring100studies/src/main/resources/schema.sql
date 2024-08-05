@@ -49,3 +49,23 @@ create table USER_LOGIN_HISTORY
     LOGIN_DATE TIMESTAMP,
     IP_ADDR    VARCHAR(255)
 );
+
+create table BOARD_TYPE
+(
+    ID          BIGINT auto_increment primary key,
+    BOARD_NAME  VARCHAR(255),
+    REG_DATE    TIMESTAMP,
+    UPDATE_DATE TIMESTAMP
+);
+
+create table BOARD
+(
+    ID            BIGINT auto_increment primary key,
+    CONTENTS      VARCHAR(255),
+    REG_DATE      TIMESTAMP,
+    TITLE         VARCHAR(255),
+    BOARD_TYPE_ID BIGINT,
+    USER_ID       BIGINT,
+    constraint FK_BOARD_BOARD_TYPE_ID foreign key (BOARD_TYPE_ID) REFERENCES BOARD_TYPE (ID),
+    constraint FK_BOARD_USER_ID foreign key (USER_ID) REFERENCES USER (ID)
+);
